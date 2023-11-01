@@ -1,10 +1,21 @@
+
+/*
+ * Author: Kevin Wong
+ * Assignment: NAND2TETRIS Project 7
+ * Date: 11/2/2023
+ * Professor: Nima Davarpanah
+ * Course: CS3650-01
+ * File: CodeWriter.java
+ * File Description: The `Parser` class handles the parsing of VM (Virtual Machine) commands from a `.vm` file. 
+ * It covers access to the input code and provides methods to extract information about the commands. The class preprocesses
+ * the input by removing comments and white spaces, simplifying parsing. It offers methods to check for more commands, advance to
+ * the next command, determine the command type (e.g., ARITHMETIC, PUSH, POP), and retrieve the command's arguments. The class 
+ * also maintains constants for different command types and a list of valid arithmetic commands for categorization.
+ */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-//import java.util.IllegalFormatException;
 import java.util.Scanner;
-//import java.util.regex.Matcher;
-//import java.util.regex.Pattern;
 
 /**
  * Handles the parsing of a single .vm file, and encapsulates access to the
@@ -69,9 +80,7 @@ public class Parser {
                     preprocessed += line + "\n";
                 }
             }
-
             cmds = new Scanner(preprocessed.trim());
-
         } catch (FileNotFoundException e) {
             System.out.println("File not found!");
         }
@@ -107,68 +116,39 @@ public class Parser {
         }
 
         if (arithmeticCmds.contains(segs[0])) {
-
             argType = ARITHMETIC;
             argument1 = segs[0];
-
         } else if (segs[0].equals("return")) {
-
             argType = RETURN;
             argument1 = segs[0];
-
         } else {
-
             argument1 = segs[1];
-
             if (segs[0].equals("push")) {
-
                 argType = PUSH;
-
             } else if (segs[0].equals("pop")) {
-
                 argType = POP;
-
             } else if (segs[0].equals("label")) {
-
                 argType = LABEL;
-
             } else if (segs[0].equals("if")) {
-
                 argType = IF;
-
             } else if (segs[0].equals("goto")) {
-
                 argType = GOTO;
-
             } else if (segs[0].equals("function")) {
-
                 argType = FUNCTION;
-
             } else if (segs[0].equals("call")) {
-
                 argType = CALL;
-
             } else {
-
                 throw new IllegalArgumentException("Unknown Command Type!");
-
             }
 
             if (argType == PUSH || argType == POP || argType == FUNCTION || argType == CALL) {
-
                 try {
-
                     argument2 = Integer.parseInt(segs[2]);
-
                 } catch (Exception e) {
-
                     throw new IllegalArgumentException("Argument2 is not an integer!");
-
                 }
-
             }
         }
-
     }
 
     /**
@@ -180,15 +160,10 @@ public class Parser {
     public int commandType() {
 
         if (argType != -1) {
-
             return argType;
-
         } else {
-
             throw new IllegalStateException("No command!");
-
         }
-
     }
 
     /**
@@ -201,13 +176,9 @@ public class Parser {
     public String arg1() {
 
         if (commandType() != RETURN) {
-
             return argument1;
-
         } else {
-
             throw new IllegalStateException("Can not get arg1 from a RETURN type command!");
-
         }
 
     }
@@ -221,15 +192,10 @@ public class Parser {
     public int arg2() {
 
         if (commandType() == PUSH || commandType() == POP || commandType() == FUNCTION || commandType() == CALL) {
-
             return argument2;
-
         } else {
-
             throw new IllegalStateException("Can not get arg2!");
-
         }
-
     }
 
     /**
@@ -243,11 +209,8 @@ public class Parser {
         int position = strIn.indexOf("//");
 
         if (position != -1) {
-
             strIn = strIn.substring(0, position);
-
         }
-
         return strIn;
     }
 
@@ -279,17 +242,11 @@ public class Parser {
      * @return
      */
     public static String getExt(String fileName) {
-
         int index = fileName.lastIndexOf('.');
-
         if (index != -1) {
-
             return fileName.substring(index);
-
         } else {
-
             return "";
-
         }
     }
 }

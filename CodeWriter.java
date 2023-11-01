@@ -1,3 +1,20 @@
+
+/*
+ * Author: Kevin Wong
+ * Assignment: NAND2TETRIS Project 7
+ * Date: 11/2/2023
+ * Professor: Nima Davarpanah
+ * Course: CS3650-01
+ * File: CodeWriter.java
+ * File Description: This class is designed for translating VM (Virtual Machine) 
+ * commands into HACK assembly code. Its constructor initializes 
+ * an output file and a print writer, while a method named `setFileName` informs the class of a new VM file translation. The core 
+ * functionality lies in methods like `writeArithmetic` and `writePushPop`. The former generates assembly code for various arithmetic 
+ * operations, such as addition, subtraction, logical operations, and comparisons, employing specific templates for each. The 
+ * latter handles push and pop operations for memory segments, including local, argument, this, that, temp, pointer, and static. 
+ * The generated assembly code is written to the output file. The class also includes private helper methods with assembly templates 
+ * for code generation.
+ */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -12,6 +29,7 @@ public class CodeWriter {
 
     /**
      * Open an output file and be ready to write content
+     * 
      * @param fileOut can be a directory!
      */
     public CodeWriter(File fileOut) {
@@ -30,62 +48,65 @@ public class CodeWriter {
     }
 
     /**
-     *If the program’s argument is a directory name rather than a file name,
+     * If the program’s argument is a directory name rather than a file name,
      * the main program should process all the .vm files in this directory.
-     * In doing so, it should use a separate Parser for handling each input file and a single CodeWriter for handling the output.
+     * In doing so, it should use a separate Parser for handling each input file and
+     * a single CodeWriter for handling the output.
      *
      * Inform the CodeWrither that the translation of a new VM file is started
      */
-    public void setFileName(File fileOut){
+    public void setFileName(File fileOut) {
 
     }
 
     /**
-     * Write the assembly code that is the translation of the given arithmetic command
+     * Write the assembly code that is the translation of the given arithmetic
+     * command
+     * 
      * @param command
      */
-    public void writeArithmetic(String command){
+    public void writeArithmetic(String command) {
 
-        if (command.equals("add")){
+        if (command.equals("add")) {
 
             outPrinter.print(arithmeticTemplate1() + "M=M+D\n");
 
-        }else if (command.equals("sub")){
+        } else if (command.equals("sub")) {
 
             outPrinter.print(arithmeticTemplate1() + "M=M-D\n");
 
-        }else if (command.equals("and")){
+        } else if (command.equals("and")) {
 
             outPrinter.print(arithmeticTemplate1() + "M=M&D\n");
 
-        }else if (command.equals("or")){
+        } else if (command.equals("or")) {
 
             outPrinter.print(arithmeticTemplate1() + "M=M|D\n");
 
-        }else if (command.equals("gt")){
+        } else if (command.equals("gt")) {
 
-            outPrinter.print(arithmeticTemplate2("JLE"));//not <=
+            outPrinter.print(arithmeticTemplate2("JLE"));// not <=
             arthJumpFlag++;
 
-        }else if (command.equals("lt")){
+        } else if (command.equals("lt")) {
 
-            outPrinter.print(arithmeticTemplate2("JGE"));//not >=
+            outPrinter.print(arithmeticTemplate2("JGE"));// not >=
             arthJumpFlag++;
 
-        }else if (command.equals("eq")){
+        } else if (command.equals("eq")) {
 
-            outPrinter.print(arithmeticTemplate2("JNE"));//not <>
+            outPrinter.print(arithmeticTemplate2("JNE"));// not <>
             arthJumpFlag++;
 
-        }else if (command.equals("not")){
+        } else if (command.equals("not")) {
 
             outPrinter.print("@SP\nA=M-1\nM=!M\n");
 
-        }else if (command.equals("neg")){
+        } else if (command.equals("neg")) {
 
             outPrinter.print("D=0\n@SP\nA=M-1\nM=D-M\n");
 
-        }else {
+        } else {
 
             throw new IllegalArgumentException("Call writeArithmetic() for a non-arithmetic command");
 
@@ -96,89 +117,90 @@ public class CodeWriter {
     /**
      * Write the assembly code that is the translation of the given command
      * where the command is either PUSH or POP
+     * 
      * @param command PUSH or POP
      * @param segment
      * @param index
      */
-    public void writePushPop(int command, String segment, int index){
+    public void writePushPop(int command, String segment, int index) {
 
-        if (command == Parser.PUSH){
+        if (command == Parser.PUSH) {
 
-            if (segment.equals("constant")){
+            if (segment.equals("constant")) {
 
                 outPrinter.print("@" + index + "\n" + "D=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
 
-            }else if (segment.equals("local")){
+            } else if (segment.equals("local")) {
 
-                outPrinter.print(pushTemplate1("LCL",index,false));
+                outPrinter.print(pushTemplate1("LCL", index, false));
 
-            }else if (segment.equals("argument")){
+            } else if (segment.equals("argument")) {
 
-                outPrinter.print(pushTemplate1("ARG",index,false));
+                outPrinter.print(pushTemplate1("ARG", index, false));
 
-            }else if (segment.equals("this")){
+            } else if (segment.equals("this")) {
 
-                outPrinter.print(pushTemplate1("THIS",index,false));
+                outPrinter.print(pushTemplate1("THIS", index, false));
 
-            }else if (segment.equals("that")){
+            } else if (segment.equals("that")) {
 
-                outPrinter.print(pushTemplate1("THAT",index,false));
+                outPrinter.print(pushTemplate1("THAT", index, false));
 
-            }else if (segment.equals("temp")){
+            } else if (segment.equals("temp")) {
 
-                outPrinter.print(pushTemplate1("R5", index + 5,false));
+                outPrinter.print(pushTemplate1("R5", index + 5, false));
 
-            }else if (segment.equals("pointer") && index == 0){
+            } else if (segment.equals("pointer") && index == 0) {
 
-                outPrinter.print(pushTemplate1("THIS",index,true));
+                outPrinter.print(pushTemplate1("THIS", index, true));
 
-            }else if (segment.equals("pointer") && index == 1){
+            } else if (segment.equals("pointer") && index == 1) {
 
-                outPrinter.print(pushTemplate1("THAT",index,true));
+                outPrinter.print(pushTemplate1("THAT", index, true));
 
-            }else if (segment.equals("static")){
+            } else if (segment.equals("static")) {
 
-                outPrinter.print(pushTemplate1(String.valueOf(16 + index),index,true));
-
-            }
-
-        }else if(command == Parser.POP){
-
-            if (segment.equals("local")){
-
-                outPrinter.print(popTemplate1("LCL",index,false));
-
-            }else if (segment.equals("argument")){
-
-                outPrinter.print(popTemplate1("ARG",index,false));
-
-            }else if (segment.equals("this")){
-
-                outPrinter.print(popTemplate1("THIS",index,false));
-
-            }else if (segment.equals("that")){
-
-                outPrinter.print(popTemplate1("THAT",index,false));
-
-            }else if (segment.equals("temp")){
-
-                outPrinter.print(popTemplate1("R5", index + 5,false));
-
-            }else if (segment.equals("pointer") && index == 0){
-
-                outPrinter.print(popTemplate1("THIS",index,true));
-
-            }else if (segment.equals("pointer") && index == 1){
-
-                outPrinter.print(popTemplate1("THAT",index,true));
-
-            }else if (segment.equals("static")){
-
-                outPrinter.print(popTemplate1(String.valueOf(16 + index),index,true));
+                outPrinter.print(pushTemplate1(String.valueOf(16 + index), index, true));
 
             }
 
-        }else {
+        } else if (command == Parser.POP) {
+
+            if (segment.equals("local")) {
+
+                outPrinter.print(popTemplate1("LCL", index, false));
+
+            } else if (segment.equals("argument")) {
+
+                outPrinter.print(popTemplate1("ARG", index, false));
+
+            } else if (segment.equals("this")) {
+
+                outPrinter.print(popTemplate1("THIS", index, false));
+
+            } else if (segment.equals("that")) {
+
+                outPrinter.print(popTemplate1("THAT", index, false));
+
+            } else if (segment.equals("temp")) {
+
+                outPrinter.print(popTemplate1("R5", index + 5, false));
+
+            } else if (segment.equals("pointer") && index == 0) {
+
+                outPrinter.print(popTemplate1("THIS", index, true));
+
+            } else if (segment.equals("pointer") && index == 1) {
+
+                outPrinter.print(popTemplate1("THAT", index, true));
+
+            } else if (segment.equals("static")) {
+
+                outPrinter.print(popTemplate1(String.valueOf(16 + index), index, true));
+
+            }
+
+        } else {
 
             throw new IllegalArgumentException("Call writePushPop() for a non-pushpop command");
 
@@ -189,7 +211,7 @@ public class CodeWriter {
     /**
      * Close the output file
      */
-    public void close(){
+    public void close() {
 
         outPrinter.close();
 
@@ -197,9 +219,10 @@ public class CodeWriter {
 
     /**
      * Template for add sub and or
+     * 
      * @return
      */
-    private String arithmeticTemplate1(){
+    private String arithmeticTemplate1() {
 
         return "@SP\n" +
                 "AM=M-1\n" +
@@ -210,10 +233,11 @@ public class CodeWriter {
 
     /**
      * Template for gt lt eq
+     * 
      * @param type JLE JGT JEQ
      * @return
      */
-    private String arithmeticTemplate2(String type){
+    private String arithmeticTemplate2(String type) {
 
         return "@SP\n" +
                 "AM=M-1\n" +
@@ -235,22 +259,22 @@ public class CodeWriter {
 
     }
 
-
     /**
      * Template for push local,this,that,argument,temp,pointer,static
+     * 
      * @param segment
      * @param index
      * @param isDirect Is this command a direct addressing?
      * @return
      */
-    private String pushTemplate1(String segment, int index, boolean isDirect){
+    private String pushTemplate1(String segment, int index, boolean isDirect) {
 
-        //When it is a pointer, just read the data stored in THIS or THAT
-        //When it is static, just read the data stored in that address
-        String noPointerCode = (isDirect)? "" : "@" + index + "\n" + "A=D+A\nD=M\n";
+        // When it is a pointer, just read the data stored in THIS or THAT
+        // When it is static, just read the data stored in that address
+        String noPointerCode = (isDirect) ? "" : "@" + index + "\n" + "A=D+A\nD=M\n";
 
         return "@" + segment + "\n" +
-                "D=M\n"+
+                "D=M\n" +
                 noPointerCode +
                 "@SP\n" +
                 "A=M\n" +
@@ -262,16 +286,17 @@ public class CodeWriter {
 
     /**
      * Template for pop local,this,that,argument,temp,pointer,static
+     * 
      * @param segment
      * @param index
      * @param isDirect Is this command a direct addressing?
      * @return
      */
-    private String popTemplate1(String segment, int index, boolean isDirect){
+    private String popTemplate1(String segment, int index, boolean isDirect) {
 
-        //When it is a pointer R13 will store the address of THIS or THAT
-        //When it is a static R13 will store the index address
-        String noPointerCode = (isDirect)? "D=A\n" : "D=M\n@" + index + "\nD=D+A\n";
+        // When it is a pointer R13 will store the address of THIS or THAT
+        // When it is a static R13 will store the index address
+        String noPointerCode = (isDirect) ? "D=A\n" : "D=M\n@" + index + "\nD=D+A\n";
 
         return "@" + segment + "\n" +
                 noPointerCode +
